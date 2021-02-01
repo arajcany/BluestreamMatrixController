@@ -1,5 +1,7 @@
 # Bluestream Matrix Switcher HTTP-CGI commands:
 
+Reverse engineered from the Web GUI that is included with Bluestream products.
+
 ## Definitions
 
 | Word              | Description                                           | 
@@ -78,9 +80,14 @@ exceptions.
    Output. It however, does nothing. If Output Number '1' was currently using Input '1', setting it to Input '0' would
    leave it at Input '1'. I have left the Commands to use the '0' as per my discovery.
 
-4) The XML is not particularly well nested as one would expect.
+## Get The Current Configration XML
 
-The root tag is `<MATRIX></MATRIX>` and you will often find...
+`http://192.168.0.50/cgi-bin/getxml.cgi?xml=mxsta`
+
+After running a Command, be sure to call the above for the most up to date version.
+
+The XML is not particularly well nested as one would expect. The root tag is `<MATRIX></MATRIX>` and you will often
+find...
 
 ```xml
 
@@ -108,15 +115,8 @@ as opposed to...
 </MATRIX>
 ```
 
-Only a minor inconvenience to most programming languages. See `/docs/http_cgi_example_xml_01.xml` as an example.
+Only a minor inconvenience to most programming languages. See `/docs/http_cgi_example_xml_01.xml` for an example.
 https://github.com/arajcany/BluestreamMatrixController/blob/main/docs/http_cgi_example_xml_01.xml
-
-
-## Get The Current Configration XML
-
-`http://192.168.0.50/cgi-bin/getxml.cgi?xml=mxsta`
-
-After running a Command, be sure to call the above for the most up to date version.
 
 NOTE: Not sure if the Switcher can deliver other formats. Variations have been tried in the querystring (e.g. JSON) but
 all give an empty response.
