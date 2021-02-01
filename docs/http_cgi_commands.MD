@@ -109,6 +109,8 @@ as opposed to...
 ```
 
 Only a minor inconvenience to most programming languages. See `/docs/http_cgi_example_xml_01.xml` as an example.
+https://github.com/arajcany/BluestreamMatrixController/blob/main/docs/http_cgi_example_xml_01.xml
+
 
 ## Get The Current Configration XML
 
