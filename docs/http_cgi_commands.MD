@@ -205,7 +205,7 @@ Note: The label will be underscored automatically upon submission of the Command
 `http://192.168.0.50/cgi-bin/submit?cmd=out{{hdmi_output_channel}}{{status}}`
 
 **Examples**  
-`http://192.168.0.50/cgi-bin/submit?cmd=out01on`
+`http://192.168.0.50/cgi-bin/submit?cmd=out01on`  
 `http://192.168.0.50/cgi-bin/submit?cmd=out01off`
 
 Enable or disable the HDMI output channel.
@@ -287,7 +287,7 @@ in the comma separated values `<presets>` tag.
 `http://192.168.0.50/cgi-bin/submit?cmd=out{{hdmi_output_channel}}fr{{hdmi_input_channel}}`
 
 **Examples**  
-`http://192.168.0.50/cgi-bin/submit?cmd=out01fr01`
+`http://192.168.0.50/cgi-bin/submit?cmd=out01fr01`  
 `http://192.168.0.50/cgi-bin/submit?cmd=out04fr01`
 
 After performing a switching, the changes will be reflected in then XML.
