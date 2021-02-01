@@ -1,0 +1,23 @@
+{
+  "name": "arajcany/boilerplate-composer",
+  "description": "Clone as a starting point for Projects/Libraries.",
+  "type": "project",
+  "license": "MIT",
+  "require": {
+    "php": ">=7.0",
+    "ext-json": "*"
+  },
+  "require-dev": {
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "App\\Test\\": "tests/"
+    }
+  },
+  "prefer-stable": true
+}
