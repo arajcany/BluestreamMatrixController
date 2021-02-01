@@ -8,6 +8,59 @@
 | XML               | Configration XML                                      |   
 | Command           | Send a HTTP request to the HTTP-CGI                   |   
 | {{paramater}}     | Replaceable values in the HTTP-CGI commands           |  
+| Source            | Physical source such as computer or DVD player        |  
+| Input Channel     | Physical port on the Switcher (e.g. HDMI input)       |  
+| Output Channel    | Physical port on the Switcher (e.g. HDMI output)      |  
+| Display           | Physical display such as monitor or TV                |  
+
+## A Note On Signal Flow In Matrix Switchers
+
+In case you are unfamiliar with Matrix Switchers, HDMI signals and EDID information flow in **_opposite_** directions...
+
+**Example HDMI Signl Flow (Left to Right):**
+
+```
+- Source A is routed to Displays A,B & C 
+- Source B goes nowhere
+- Source C goes nowhere
+- Source D is routed to Display D
+
+             |-------------Matrix Switcher------------|
+             |                                        |  
+Source A ->  | Input Channel 1 --|-> Output Channel 2 | -> Display A (native 1080p display)
+             |                   |                    |  
+Source B ->  | Input Channel 2   |-> Output Channel 2 | -> Display B (native 4K display)
+             |                   |                    |  
+Source C ->  | Input Channel 3   |-> Output Channel 3 | -> Display C (native 1920x1200px display)
+             |                                        |  
+Source D ->  | Input Channel 4  ---> Output Channel 4 | -> Display D (native 1080p display)
+             |                                        |  
+             |----------------------------------------|
+```
+
+**Example EDID Signl Flow (Right to Left):**
+
+```
+- Source A could be receiving conflicting EDID inforation from Displays A,B & C 
+- Source B no EDID information received
+- Source C no EDID information received
+- Source D receives EDID information from Display D
+
+             |-------------Matrix Switcher------------|
+             |                                        |  
+Source A <-  | Input Channel 1 <-|-- Output Channel 2 | <- Display A (native 1080p display)
+             |                   |                    |  
+Source B <-  | Input Channel 2   |-- Output Channel 2 | <- Display B (native 4K display)
+             |                   |                    |  
+Source C <-  | Input Channel 3   |-- Output Channel 3 | <- Display C (native 1920x1200px display)
+             |                                        |  
+Source D <-  | Input Channel 4  <--- Output Channel 4 | <- Display D (native 1080p display)
+             |                                        |  
+             |----------------------------------------|
+```
+
+In the scenario above, what format should 'Source A' be sending - 1080p, 4K or 1920x1200px?  
+See section **'INPUT: HDMI EDID Source Selection'** to force a specific EDID on an Input Channel.
 
 ## A Note On Some Found Quirks
 
@@ -15,15 +68,47 @@ As I was reverse engineering the HTTP-CGI commands, I found that most things beh
 exceptions.
 
 1) You will notice that integers switch between the use of padded (e.g. 01) and non-padded (e.g. 1). I noticed that you
-   can send either but in the example URL's i have used what ever the original format was.
+   can send either but in the example URL's I have used whatever the original format was.
 
-2) Some of the URL Commands contain spaces. I have left the spaces in the example and you will need to URL_ENCODE before
+2) Some URL Commands contain spaces. I have left the spaces in the examples. You will need to `urlencode()` before
    sending commands to the HTTP-CGI.
 
-3) Inputs and Outputs map to 1-based index. The number 0 as an index is supposed to be used as 'no input'. This however
+3) Inputs and Outputs use a 1-based index. The value 0 as an index is supposed to be used as 'no input'. This however
    rarely works. For example, you would imagine that setting Output Number '1' to use the Input of '0' would blank that
-   Output. It however, does nothing. If Output Number '1' was currently using Input '1', setting Input '0' would leave
-   it at Input '1'. I have left the Commands to use the '0' as per my discovery.
+   Output. It however, does nothing. If Output Number '1' was currently using Input '1', setting it to Input '0' would
+   leave it at Input '1'. I have left the Commands to use the '0' as per my discovery.
+
+4) The XML is not particularly well nested as one would expect.
+
+The root tag is `<MATRIX></MATRIX>` and you will often find...
+
+```xml
+
+<MATRIX>
+    <foo>val</foo>
+    <foo>val</foo>
+    <bar>val</bar>
+    <bar>val</bar>
+</MATRIX>
+```
+
+as opposed to...
+
+```xml
+
+<MATRIX>
+    <foos>
+        <foo>val</foo>
+        <foo>val</foo>
+    </foos>
+    <bars>
+        <bar>val</bar>
+        <bar>val</bar>
+    </bars>
+</MATRIX>
+```
+
+Only a minor inconvenience to most programming languages. See `/docs/http_cgi_example_xml_01.xml` as an example.
 
 ## Get The Current Configration XML
 
@@ -34,19 +119,19 @@ After running a Command, be sure to call the above for the most up to date versi
 NOTE: Not sure if the Switcher can deliver other formats. Variations have been tried in the querystring (e.g. JSON) but
 all give an empty response.
 
-## INPUT: HDMI EDID Source Selections
+## INPUT: HDMI EDID Source Selection
 
 `http://192.168.0.50/cgi-bin/submit?cmd=edid {{hdmi_input_channel}} df {{edid_value}}`
 
-You can explicitly tell the Switcher what type of HDMI signal is being fed into the input channel. This can help in
-situations where the Switcher cannot auto-detect the HDMI EDID information.
+You can explicitly tell the Switcher what type of HDMI format (via EDID information) should being present on the Input
+Channel that will be fed back down to the Source. This can help in situations where the Switcher cannot auto-detect the
+HDMI EDID information that the Display is presenting to the Output Channel or when you have Displays with varying
+capabilities.
 
 | Parameter             | Type          | Options                                               |
 | -------------         |-------------  | -------------                                         |
-| hdmi_input_channel    | integer       | 1 to N. N being the highest value in the XML          |
+| hdmi_input_channel    | integer       | 1 to N. N being the highest value in the XML.         |
 | edid_value            | integer       | See values below                                      |
-
-**List of edid_values:**
 
 ```
 label="HDMI-1080P Audio-2.0CH"      value="0"
@@ -87,11 +172,11 @@ label="COPY OUTPUT 4 EDID"          value="51"
 
 Helps to identify the input (and output) when creating a GUI for other purposes. Upon updating the input label, the
 changes will be reflected in the XML.  
-Note: The label will automatically be underscored upon submission to the HTTP-CGI.
+Note: The label will be underscored automatically upon submission of the Command.
 
 | Parameter             | Type          | Options                                                                     |
 | -------------         |-------------  | -------------                                                               |
-| hdmi_input_channel    | integer       | 1 to N. N being the highest value in the XML                                |
+| hdmi_input_channel    | integer       | 1 to N. N being the highest value in the XML.                               |
 | label                 | string (85)   | Spaces will be converted to underscore. Special characters limited to _~!@  |
 
 ## OUTPUT: Create GUI Friendly Labels
@@ -106,11 +191,11 @@ Note: The label will automatically be underscored upon submission to the HTTP-CG
 
 Helps to identify the output (and input) when creating a GUI for other purposes. Upon updating the output label, the
 changes will be reflected in the XML.  
-Note: The label will automatically be underscored upon submission to the HTTP-CGI.
+Note: The label will be underscored automatically upon submission of the Command.
 
 | Parameter             | Type          | Options                                                                       |
 | -------------         |-------------  | -------------                                                                 |
-| hdmi_output_channel   | integer       | 1 to N. N being the highest value in the XML                                  |
+| hdmi_output_channel   | integer       | 1 to N. N being the highest value in the XML.                                 |
 | label                 | string (85)   | Spaces will be converted to underscore. Special characters limited to _~!@    |
 
 ## OUTPUT: Enable or Disable HDMI Output
