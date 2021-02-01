@@ -213,12 +213,12 @@ Enable or disable the HDMI output channel.
 | hdmi_output_channel   | padded integer    | 01 to N. N being the highest value in the XML. Note the padding.  |
 | status                | string            | Can only be `on` or `off`                                         |
 
-## OUTPUT: Enable or Disable Power Over HDMI (POH)
+## OUTPUT: Enable or Disable Power Over HDBaseT™ (POH)
 
 `http://192.168.0.50/cgi-bin/submit?cmd=poh tx {{hdmi_output_channel}} {{status}}`
 
 **Examples**  
-`http://192.168.0.50/cgi-bin/submit?cmd=poh tx 01 off`
+`http://192.168.0.50/cgi-bin/submit?cmd=poh tx 01 off`  
 `http://192.168.0.50/cgi-bin/submit?cmd=poh tx 01 on`
 
 The Switcher can deliver POH to supply the RX unit. If you disable POH, the RX unit will need its own power supply (i.e
@@ -301,10 +301,10 @@ Despite the ability for the Switcher to hold presets, there is no command to run
 the following:
 
 1) Read the requested preset from the XML.
-2) Generate and send the appropriate switching commands
+2) Generate and send the appropriate switching Commands
 
 **Read XML Example**  
-User requests preset number 2.
+If the user requests Preset Number 2...
 
 ```xml
 <!-- Extracted from http://192.168.0.50/cgi-bin/getxml.cgi?xml=mxsta -->
@@ -323,7 +323,7 @@ User requests preset number 2.
 ```
 
 **Send HTTP-CGI Request Examples**  
-Generate and send the following requests
+Generate and send the following Commands...
 
 ```
 http://192.168.0.50/cgi-bin/submit?cmd=out01fr01  
