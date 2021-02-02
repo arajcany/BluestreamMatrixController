@@ -1,23 +1,32 @@
 {
-  "name": "arajcany/boilerplate-composer",
-  "description": "Clone as a starting point for Projects/Libraries.",
-  "type": "project",
+  "name": "arajcany/blustream-matrix-controlelr",
+  "description": "PHP Library to control Blustream Matrix Switchers via HTTP-CGI Requests.",
+  "type": "library",
   "license": "MIT",
   "require": {
     "php": ">=7.0",
-    "ext-json": "*"
+    "ext-json": "*",
+    "guzzlehttp/guzzle": "^7.2",
+    "ext-dom": "*",
+    "cakephp/utility": "^4.2",
+    "ext-simplexml": "*"
   },
   "require-dev": {
+    "phpunit/phpunit": "*",
+    "ext-simplexml": "*"
   },
   "autoload": {
     "psr-4": {
-      "App\\": "src/"
+      "arajcany\\BlustreamMatrixController\\": "src/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "App\\Test\\": "tests/"
+      "arajcany\\tests\\": "tests/"
     }
+  },
+  "scripts": {
+    "test": "phpunit"
   },
   "prefer-stable": true
 }

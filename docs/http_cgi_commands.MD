@@ -1,12 +1,12 @@
-# Bluestream Matrix Switcher HTTP-CGI commands:
+# Blustream Matrix Switcher HTTP-CGI commands:
 
-Reverse engineered from the Web GUI that is included with Bluestream products.
+Reverse engineered from the Web GUI that is included with Blustream products.
 
 ## Definitions
 
 | Word              | Description                                           | 
 | -------------     |-------------                                          | 
-| Switcher          | Bluestream Matrix Switcher                            | 
+| Switcher          | Blustream Matrix Switcher                            | 
 | XML               | Configration XML                                      |   
 | Command           | Send a HTTP request to the HTTP-CGI                   |   
 | {{paramater}}     | Replaceable values in the HTTP-CGI commands           |  
@@ -116,7 +116,7 @@ as opposed to...
 ```
 
 Only a minor inconvenience to most programming languages. See `/docs/http_cgi_example_xml_01.xml` for an example.
-https://github.com/arajcany/BluestreamMatrixController/blob/main/docs/http_cgi_example_xml_01.xml
+https://github.com/arajcany/BlustreamMatrixController/blob/main/docs/http_cgi_example_xml_01.xml
 
 NOTE: Not sure if the Switcher can deliver other formats. Variations have been tried in the querystring (e.g. JSON) but
 all give an empty response.
@@ -290,7 +290,7 @@ in the comma separated values `<presets>` tag.
 `http://192.168.0.50/cgi-bin/submit?cmd=out01fr01`  
 `http://192.168.0.50/cgi-bin/submit?cmd=out04fr01`
 
-After performing a switching, the changes will be reflected in then XML.
+After performing a switching, the changes will be reflected in the XML.
 
 | Parameter             | Type              | Options                                                           |
 | -------------         |-------------      | -------------                                                     |
@@ -299,7 +299,7 @@ After performing a switching, the changes will be reflected in then XML.
 
 ## SWITCHING: Run A Preset
 
-Despite the ability for the Switcher to hold presets, there is no command to run the defined presets. To run a preset do
+Despite the ability for the Switcher to hold presets, there is no Command to run the defined presets. To run a preset do
 the following:
 
 1) Read the requested preset from the XML.
@@ -338,7 +338,7 @@ http://192.168.0.50/cgi-bin/submit?cmd=out07fr00
 http://192.168.0.50/cgi-bin/submit?cmd=out08fr00  
 ```
 
-After performing a switching, the changes will be reflected in then XML.
+After performing a switching, the changes will be reflected in the XML.
 
 
 
