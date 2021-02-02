@@ -1,18 +1,20 @@
 # Blustream Matrix Switcher HTTP-CGI commands:
 
-Reverse engineered from the Web GUI that is included with Blustream products.
+Reverse engineered from the Web GUI of the C44-KIT (Contractor 4x4 HDBaseT™ Matrix Kit - 70m ).  
+https://www.blustream.com.au/c44-kit  
+https://www.blustream.co.uk/c44kit
 
 ## Definitions
 
 | Word              | Description                                           | 
 | -------------     |-------------                                          | 
-| Switcher          | Blustream Matrix Switcher                            | 
+| Switcher          | Blustream Matrix Switcher                             | 
 | XML               | Configration XML                                      |   
 | Command           | Send a HTTP request to the HTTP-CGI                   |   
 | {{paramater}}     | Replaceable values in the HTTP-CGI commands           |  
 | Source            | Physical source such as computer or DVD player        |  
-| Input Channel     | Physical port on the Switcher (e.g. HDMI input)       |  
-| Output Channel    | Physical port on the Switcher (e.g. HDMI output)      |  
+| Input Port        | Physical port on the Switcher (e.g. HDMI input)       |  
+| Output Port       | Physical port on the Switcher (e.g. HDMI output)      |  
 | Display           | Physical display such as monitor or TV                |  
 
 ## A Note On Signal Flow In Matrix Switchers
@@ -27,17 +29,17 @@ In case you are unfamiliar with Matrix Switchers, HDMI signals and EDID informat
 - Source C goes nowhere
 - Source D is routed to Display D
 
-             |-------------Matrix Switcher------------|
-             |                                        |  
-Source A ->  | Input Channel 1 --|-> Output Channel 2 | -> Display A (native 1080p display)
-             |                   |                    |  
-Source B ->  | Input Channel 2   |-> Output Channel 2 | -> Display B (native 4K display)
-             |                   |                    |  
-Source C ->  | Input Channel 3   |-> Output Channel 3 | -> Display C (native 1920x1200px display)
-             |                                        |  
-Source D ->  | Input Channel 4  ---> Output Channel 4 | -> Display D (native 1080p display)
-             |                                        |  
-             |----------------------------------------|
+              |--------------Matrix Switcher-----------|    
+              |                                        |    
+Source A -->  |  Input Port 1   --|->   Output Port 1  |  --> Display A (native 1080p display)
+              |                   |                    |    
+Source B -->  |  Input Port 2     |->   Output Port 2  |  --> Display B (native 4K display)
+              |                   |                    |    
+Source C -->  |  Input Port 3     |->   Output Port 3  |  --> Display C (native 1920x1200px display)
+              |                                        |    
+Source D -->  |  Input Port 4   ---->   Output Port 4  |  --> Display D (native 1080p display)
+              |                                        |    
+              |----------------------------------------|
 ```
 
 **Example EDID Signl Flow (Right to Left):**
@@ -48,21 +50,21 @@ Source D ->  | Input Channel 4  ---> Output Channel 4 | -> Display D (native 108
 - Source C no EDID information received
 - Source D receives EDID information from Display D
 
-             |-------------Matrix Switcher------------|
-             |                                        |  
-Source A <-  | Input Channel 1 <-|-- Output Channel 2 | <- Display A (native 1080p display)
-             |                   |                    |  
-Source B <-  | Input Channel 2   |-- Output Channel 2 | <- Display B (native 4K display)
-             |                   |                    |  
-Source C <-  | Input Channel 3   |-- Output Channel 3 | <- Display C (native 1920x1200px display)
-             |                                        |  
-Source D <-  | Input Channel 4  <--- Output Channel 4 | <- Display D (native 1080p display)
-             |                                        |  
-             |----------------------------------------|
+              |--------------Matrix Switcher-----------|     
+              |                                        |   
+Source A <--  |  Input Port 1   <-|--   Output Port 1  |  <-- Display A (native 1080p display)
+              |                   |                    |   
+Source B <--  |  Input Port 2     |--   Output Port 2  |  <-- Display B (native 4K display)
+              |                   |                    |   
+Source C <--  |  Input Port 3     |--   Output Port 3  |  <-- Display C (native 1920x1200px display)
+              |                                        |   
+Source D <--  |  Input Port 4   <----   Output Port 4  |  <-- Display D (native 1080p display)
+              |                                        |   
+              |----------------------------------------|
 ```
 
 In the scenario above, what format should 'Source A' be sending - 1080p, 4K or 1920x1200px?  
-See section **'INPUT: HDMI EDID Source Selection'** to force a specific EDID on an Input Channel.
+See section **'INPUT: HDMI EDID Source Selection'** to force a specific EDID on an Input Port .
 
 ## A Note On Some Found Quirks
 
@@ -123,49 +125,86 @@ all give an empty response.
 
 ## INPUT: HDMI EDID Source Selection
 
-`http://192.168.0.50/cgi-bin/submit?cmd=edid {{hdmi_input_channel}} df {{edid_value}}`
+`http://192.168.0.50/cgi-bin/submit?cmd=edid {{hdmi_input_port}} df {{edid_value}}`
 
 You can explicitly tell the Switcher what type of HDMI format (via EDID information) should being present on the Input
-Channel that will be fed back down to the Source. This can help in situations where the Switcher cannot auto-detect the
-HDMI EDID information that the Display is presenting to the Output Channel or when you have Displays with varying
+Port that will be fed back down to the Source. This can help in situations where the Switcher cannot auto-detect the
+HDMI EDID information that the Display is presenting to the Output Port or when you have Displays with varying
 capabilities.
 
 | Parameter             | Type          | Options                                               |
 | -------------         |-------------  | -------------                                         |
-| hdmi_input_channel    | integer       | 1 to N. N being the highest value in the XML.         |
+| hdmi_input_port       | integer       | 1 to N. N being the highest value in the XML.         |
 | edid_value            | integer       | See values below                                      |
 
+```html
+C44-KIT Switcher
+https://www.blustream.co.uk/c44kit
+https://www.blustream.com.au/c44-kit
+<select>
+    <option label="HDMI-1080P Audio-2.0CH" value="number:0">HDMI-1080P Audio-2.0CH</option>
+    <option label="HDMI-1080P Audio-5.1CH" value="number:1">HDMI-1080P Audio-5.1CH</option>
+    <option label="HDMI-1080P Audio-7.1CH" value="number:2">HDMI-1080P Audio-7.1CH</option>
+    <option label="HDMI-1080I Audio-2.0CH" value="number:3">HDMI-1080I Audio-2.0CH</option>
+    <option label="HDMI-1080I Audio-5.1CH" value="number:4">HDMI-1080I Audio-5.1CH</option>
+    <option label="HDMI-1080I Audio-7.1CH" value="number:5">HDMI-1080I Audio-7.1CH</option>
+    <option label="HDMI-3D Audio-2.0CH" value="number:6">HDMI-3D Audio-2.0CH</option>
+    <option label="HDMI-3D Audio-5.1CH" value="number:7">HDMI-3D Audio-5.1CH</option>
+    <option label="HDMI-3D Audio-7.1CH" value="number:8">HDMI-3D Audio-7.1CH</option>
+    <option label="HDMI-4K2K Audio-2.0CH" value="number:9">HDMI-4K2K Audio-2.0CH</option>
+    <option label="HDMI-4K2K Audio-5.1CH" value="number:10">HDMI-4K2K Audio-5.1CH</option>
+    <option label="HDMI-4K2K Audio-7.1CH" value="number:11">HDMI-4K2K Audio-7.1CH</option>
+    <option label="DVI-1280x1024@60Hz" value="number:12">DVI-1280x1024@60Hz</option>
+    <option label="DVI-1920x1080@60Hz" value="number:13">DVI-1920x1080@60Hz</option>
+    <option label="DVI-1920x1200@60Hz" value="number:14">DVI-1920x1200@60Hz</option>
+    <option label="USER1 EDID" value="number:15" selected="selected">USER1 EDID</option>
+    <option label="USER2 EDID" value="number:16">USER2 EDID</option>
+    <option label="GUI DOWNLOAD EDID" value="number:17">GUI DOWNLOAD EDID</option>
+    <option label="HDMI-4K60 420 Audio-2.0CH" value="number:18">HDMI-4K60 420 Audio-2.0CH</option>
+    <option label="HDMI-4K60 420 Audio-5.1CH" value="number:19">HDMI-4K60 420 Audio-5.1CH</option>
+    <option label="HDMI-4K60 420 Audio-7.1CH" value="number:20">HDMI-4K60 420 Audio-7.1CH</option>
+    <option label="COPY OUTPUT 1 EDID" value="number:48">COPY OUTPUT 1 EDID</option>
+    <option label="COPY OUTPUT 2 EDID" value="number:49">COPY OUTPUT 2 EDID</option>
+    <option label="COPY OUTPUT 3 EDID" value="number:50">COPY OUTPUT 3 EDID</option>
+    <option label="COPY OUTPUT 4 EDID" value="number:51">COPY OUTPUT 4 EDID</option>
+</select>
 ```
-label="HDMI-1080P Audio-2.0CH"      value="0"
-label="HDMI-1080P Audio-5.1CH"      value="1"
-label="HDMI-1080P Audio-7.1CH"      value="2"
-label="HDMI-1080I Audio-2.0CH"      value="3"
-label="HDMI-1080I Audio-5.1CH"      value="4"
-label="HDMI-1080I Audio-7.1CH"      value="5"
-label="HDMI-3D Audio-2.0CH"         value="6"
-label="HDMI-3D Audio-5.1CH"         value="7"
-label="HDMI-3D Audio-7.1CH"         value="8"
-label="HDMI-4K2K Audio-2.0CH"       value="9"
-label="HDMI-4K2K Audio-5.1CH"       value="10"
-label="HDMI-4K2K Audio-7.1CH"       value="11"
-label="DVI-1280x1024@60Hz"          value="12"
-label="DVI-1920x1080@60Hz"          value="13"
-label="DVI-1920x1200@60Hz"          value="14"
-label="USER1 EDID"                  value="15"
-label="USER2 EDID"                  value="16"
-label="GUI DOWNLOAD EDID"           value="17"
-label="HDMI-4K60 420 Audio-2.0CH"   value="18"
-label="HDMI-4K60 420 Audio-5.1CH"   value="19"
-label="HDMI-4K60 420 Audio-7.1CH"   value="20"
-label="COPY OUTPUT 1 EDID"          value="48"
-label="COPY OUTPUT 2 EDID"          value="49"
-label="COPY OUTPUT 3 EDID"          value="50"
-label="COPY OUTPUT 4 EDID"          value="51"
+Note: Different model Switchers have a slightly different value for EDID selection.
+```html
+HMXL44 V2 Switcher
+https://www.blustream.co.uk/hmxl44kitv2
+https://www.blustream.com.au/hmxl44-kit-v2
+<select>
+    <option label="HDMI-1080P Audio-2.0CH" value="number:0">HDMI-1080P Audio-2.0CH</option>
+    <option label="HDMI-1080P Audio-5.1CH" value="number:1">HDMI-1080P Audio-5.1CH</option>
+    <option label="HDMI-1080P Audio-7.1CH" value="number:2">HDMI-1080P Audio-7.1CH</option>
+    <option label="HDMI-1080I Audio-2.0CH" value="number:3">HDMI-1080I Audio-2.0CH</option>
+    <option label="HDMI-1080I Audio-5.1CH" value="number:4">HDMI-1080I Audio-5.1CH</option>
+    <option label="HDMI-1080I Audio-7.1CH" value="number:5">HDMI-1080I Audio-7.1CH</option>
+    <option label="HDMI-3D Audio-2.0CH" value="number:6">HDMI-3D Audio-2.0CH</option>
+    <option label="HDMI-3D Audio-5.1CH" value="number:7">HDMI-3D Audio-5.1CH</option>
+    <option label="HDMI-3D Audio-7.1CH" value="number:8">HDMI-3D Audio-7.1CH</option>
+    <option label="HDMI-4K2K Audio-2.0CH" value="number:9">HDMI-4K2K Audio-2.0CH</option>
+    <option label="HDMI-4K2K Audio-5.1CH" value="number:10">HDMI-4K2K Audio-5.1CH</option>
+    <option label="HDMI-4K2K Audio-7.1CH" value="number:11">HDMI-4K2K Audio-7.1CH</option>
+    <option label="DVI-1280x1024@60Hz" value="number:12">DVI-1280x1024@60Hz</option>
+    <option label="DVI-1920x1080@60Hz" value="number:13">DVI-1920x1080@60Hz</option>
+    <option label="DVI-1920x1200@60Hz" value="number:14">DVI-1920x1200@60Hz</option>
+    <option label="USER1 EDID" value="number:15">USER1 EDID</option>
+    <option label="USER2 EDID" value="number:16">USER2 EDID</option>
+    <option label="GUI DOWNLOAD EDID" value="number:17">GUI DOWNLOAD EDID</option>
+    <option label="COPY OUTPUT 1 EDID" value="number:18">COPY OUTPUT 1 EDID</option>
+    <option label="COPY OUTPUT 2 EDID" value="number:19">COPY OUTPUT 2 EDID</option>
+    <option label="COPY OUTPUT 3 EDID" value="number:20">COPY OUTPUT 3 EDID</option>
+    <option label="COPY OUTPUT 4 EDID" value="number:21">COPY OUTPUT 4 EDID</option>
+    <option label="COPY OUTPUT 5 EDID" value="number:22">COPY OUTPUT 5 EDID</option>
+    <option label="COPY OUTPUT 6 EDID" value="number:23">COPY OUTPUT 6 EDID</option>
+</select>
 ```
 
 ## INPUT: Create GUI Friendly Labels
 
-`http://192.168.0.50/cgi-bin/submit?cfg:in{{hdmi_input_channel}}name={{label}}`
+`http://192.168.0.50/cgi-bin/submit?cfg:in{{hdmi_input_port}}name={{label}}`
 
 **Examples**  
 `http://192.168.0.50/cgi-bin/submit?cfg:in1name=Mac Power Point`  
@@ -178,12 +217,12 @@ Note: The label will be underscored automatically upon submission of the Command
 
 | Parameter             | Type          | Options                                                                     |
 | -------------         |-------------  | -------------                                                               |
-| hdmi_input_channel    | integer       | 1 to N. N being the highest value in the XML.                               |
+| hdmi_input_port       | integer       | 1 to N. N being the highest value in the XML.                               |
 | label                 | string (85)   | Spaces will be converted to underscore. Special characters limited to _~!@  |
 
 ## OUTPUT: Create GUI Friendly Labels
 
-`http://192.168.0.50/cgi-bin/submit?cfg:out{{hdmi_output_channel}}name={{label}}`
+`http://192.168.0.50/cgi-bin/submit?cfg:out{{hdmi_output_port}}name={{label}}`
 
 **Examples**  
 `http://192.168.0.50/cgi-bin/submit?cfg:out1name=Epson Projector`  
@@ -197,27 +236,27 @@ Note: The label will be underscored automatically upon submission of the Command
 
 | Parameter             | Type          | Options                                                                       |
 | -------------         |-------------  | -------------                                                                 |
-| hdmi_output_channel   | integer       | 1 to N. N being the highest value in the XML.                                 |
+| hdmi_output_port      | integer       | 1 to N. N being the highest value in the XML.                                 |
 | label                 | string (85)   | Spaces will be converted to underscore. Special characters limited to _~!@    |
 
 ## OUTPUT: Enable or Disable HDMI Output
 
-`http://192.168.0.50/cgi-bin/submit?cmd=out{{hdmi_output_channel}}{{status}}`
+`http://192.168.0.50/cgi-bin/submit?cmd=out{{hdmi_output_port}}{{status}}`
 
 **Examples**  
 `http://192.168.0.50/cgi-bin/submit?cmd=out01on`  
 `http://192.168.0.50/cgi-bin/submit?cmd=out01off`
 
-Enable or disable the HDMI output channel.
+Enable or disable the HDMI output port.
 
 | Parameter             | Type              | Options                                                           |
 | -------------         |-------------      | -------------                                                     |
-| hdmi_output_channel   | padded integer    | 01 to N. N being the highest value in the XML. Note the padding.  |
+| hdmi_output_port      | padded integer    | 01 to N. N being the highest value in the XML. Note the padding.  |
 | status                | string            | Can only be `on` or `off`                                         |
 
 ## OUTPUT: Enable or Disable Power Over HDBaseT™ (POH)
 
-`http://192.168.0.50/cgi-bin/submit?cmd=poh tx {{hdmi_output_channel}} {{status}}`
+`http://192.168.0.50/cgi-bin/submit?cmd=poh tx {{hdmi_output_port}} {{status}}`
 
 **Examples**  
 `http://192.168.0.50/cgi-bin/submit?cmd=poh tx 01 off`  
@@ -228,7 +267,7 @@ wall-wart).
 
 | Parameter             | Type              | Options                                                           |
 | -------------         |-------------      | -------------                                                     |
-| hdmi_output_channel   | padded integer    | 01 to N. N being the highest value in the XML. Note the padding.  |
+| hdmi_output_port      | padded integer    | 01 to N. N being the highest value in the XML. Note the padding.  |
 | status                | string            | Can only be `on` or `off`                                         |
 
 ## PRESET: Configure Presets
@@ -280,11 +319,11 @@ in the comma separated values `<presets>` tag.
 
 |                  |     HDMI OUTPUT 1      |          ...           |          ...           |     HDMI OUTPUT N      | 
 | ---------------- | :--------------------: | :--------------------: | :--------------------: | :--------------------: | 
-| HDMI INPUT       | {{hdmi_input_channel}} | {{hdmi_input_channel}} | {{hdmi_input_channel}} | {{hdmi_input_channel}} |  
+| HDMI INPUT       | {{hdmi_input_port}} | {{hdmi_input_port}} | {{hdmi_input_port}} | {{hdmi_input_port}} |  
 
 ## SWITCHING: Set Output Destination To An Input Source
 
-`http://192.168.0.50/cgi-bin/submit?cmd=out{{hdmi_output_channel}}fr{{hdmi_input_channel}}`
+`http://192.168.0.50/cgi-bin/submit?cmd=out{{hdmi_output_port}}fr{{hdmi_input_port}}`
 
 **Examples**  
 `http://192.168.0.50/cgi-bin/submit?cmd=out01fr01`  
@@ -294,8 +333,8 @@ After performing a switching, the changes will be reflected in the XML.
 
 | Parameter             | Type              | Options                                                           |
 | -------------         |-------------      | -------------                                                     |
-| hdmi_output_channel   | padded integer    | 01 to N. N being the highest value in the XML. Note the padding.  |
-| hdmi_input_channel    | padded integer    | 01 to N. N being the highest value in the XML. Note the padding.  |
+| hdmi_output_port      | padded integer    | 01 to N. N being the highest value in the XML. Note the padding.  |
+| hdmi_input_port       | padded integer    | 01 to N. N being the highest value in the XML. Note the padding.  |
 
 ## SWITCHING: Run A Preset
 
